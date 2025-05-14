@@ -1,101 +1,61 @@
-body {background: rgb(237, 151, 104);}
+/*Renk Paleti - Göz tonlarından ilhamla */
+:root {
+  --amber-gold: #d1a646;   /* kehribar */
+  --golden-light: #f4c87a; /* dış halka ışıltı */
+  --olive-green: #8d9440;  /* yeşilimsi damarlar */
+  --cinnamon: #a66e2c;     /* sıcak yansıma */
+  --deep-brown: #5c3a2e;   /* göz kenarı gölgeleri */
+  --background: linear-gradient(135deg, #f4c87a, #8d9440);
+}
 
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: var(--background);
+  overflow: hidden;
+}
+
+/* Kalp Temel Yapısı */
 .heart {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 24px;
-	height: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
   clip-path: path("M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z");
+  transition: background 1s ease;
 }
 
-.h0 {
-  background: #ffcccc;
-	transform: scale(150);
-  animation: move0 linear 2s 0s infinite;
-}
+/* Katmanlar */
+.h0 { background: var(--golden-light); transform: scale(150); animation: move0 3s linear infinite; }
+.h1 { background: var(--amber-gold);   transform: scale(90);  animation: move1 3s linear infinite; }
+.h2 { background: var(--olive-green);  transform: scale(60);  animation: move2 3s linear infinite; }
+.h3 { background: var(--cinnamon);     transform: scale(40);  animation: move3 3s linear infinite; }
+.h4 { background: var(--deep-brown);   transform: scale(20);  animation: move4 3s linear infinite; }
+.h5 { background: var(--olive-green);  transform: scale(5);   animation: move5 3s linear infinite; }
+.h6 { background: var(--golden-light); transform: scale(0.1); animation: move6 3s linear infinite; }
 
-.h1 {
-  background: #ff6666;
-	transform: scale(90);
-  animation: move1 linear 2s 0s infinite;
-}
-
-.h2 {
-  background: #cc0000;
-	transform: scale(60);
-  animation: move2 linear 2s 0s infinite;
-}
-
-.h3 {
-	background: #ffcccc;
-	transform: scale(40);
-  animation: move3 linear 2s 0s infinite;
-}
-
-.h4 {
-  background: #ff6666;
-	transform: scale(20);
-  animation: move4 linear 2s 0s infinite;
-}
-
-.h5 {
-  background: #cc0000;
-	transform: scale(5);
-  animation: move5 linear 2s 0s infinite;
-}
-
-.h6 {
-	background: #ffcccc;
-	transform: scale(.1);
-  animation: move6 linear 2s 0s infinite;
-}
-
+/* Kalp Hareket Geçişleri */
 @keyframes move0 {
-  to {
-    transform: scale(180);
-    background: #cc0000;
-  }
+  to { transform: scale(180); background: var(--amber-gold); }
 }
-
 @keyframes move1 {
-  to {
-    transform: scale(150);
-    background: #ffcccc;
-  }
+  to { transform: scale(150); background: var(--golden-light); }
 }
-
 @keyframes move2 {
-  to {
-    transform: scale(90);
-    background: #ff6666;
-  }
+  to { transform: scale(90);  background: var(--cinnamon); }
 }
-
 @keyframes move3 {
-  to {
-    transform: scale(60);
-    background: #cc0000;
-  }
+  to { transform: scale(60);  background: var(--deep-brown); }
 }
-
 @keyframes move4 {
-  to {
-    transform: scale(40);
-    background: #ffcccc;
-  }
+  to { transform: scale(40);  background: var(--olive-green); }
 }
-
 @keyframes move5 {
-  to {
-    transform: scale(20);
-    background: #ff6666;
-  }
+  to { transform: scale(20);  background: var(--golden-light); }
 }
-
 @keyframes move6 {
-  to {
-    transform: scale(5);
-    background: #cc0000;
-  }
+  to { transform: scale(5);   background: var(--amber-gold); }
 }

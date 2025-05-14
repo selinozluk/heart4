@@ -1,121 +1,102 @@
 'use strict';
 
-const maxScale         = 3;
-const scaleStep        = .001;
-const width            = 400;
-const height           = 400;
-const heartsCount      = 20;
+/*Temel Ayarlar */
+const maxScale = 3;
+const scaleStep = 0.001;
+const width = 400;
+const height = 400;
 const newHeartInterval = 250;
-const colourList       = [
-  "#9925fb",
-  "#cb27fc",
-  "#fd28fc",
-  "#22cccb",
-  "#1aa5cb",
-  "#137dca"
+
+/*Göz Renginden İlham Alınmış Renk Paleti */
+const colourList = [
+  "rgba(244, 200, 122, 0.85)",  // golden-light → açık
+  "rgba(209, 166, 70, 0.85)",   // amber-gold → orta
+  "rgba(141, 148, 64, 0.85)",   // olive-green → zeytine yakın
+  "rgba(166, 110, 44, 0.85)",   // cinnamon → tarçın
+  "rgba(92, 58, 46, 0.85)"      // deep-brown → en koyu
 ];
 
-function drawHeart(ctx, fromx, fromy,lw,hlen,color) {
-  var x = fromx;
-  var y = fromy;
-  var width = lw ;
-  var height = hlen;
+
+/*Kalp Çizim Fonksiyonu */
+function drawHeart(ctx, x, y, w, h, color) {
+  const topCurveHeight = h * 0.3;
 
   ctx.save();
   ctx.beginPath();
-  var topCurveHeight = height * 0.3;
   ctx.moveTo(x, y + topCurveHeight);
-  ctx.bezierCurveTo(
-    x, y, 
-    x - width / 2, y, 
-    x - width / 2, y + topCurveHeight
-  );
-
-  ctx.bezierCurveTo(
-    x - width / 2, y + (height + topCurveHeight) / 2, 
-    x, y + (height + topCurveHeight) / 2, 
-    x, y + height
-  );
-
-  ctx.bezierCurveTo(
-    x, y + (height + topCurveHeight) / 2, 
-    x + width / 2, y + (height + topCurveHeight) / 2, 
-    x + width / 2, y + topCurveHeight
-  );
-
-  ctx.bezierCurveTo(
-    x + width / 2, y, 
-    x, y, 
-    x, y + topCurveHeight
-  );
-
+  ctx.bezierCurveTo(x, y, x - w / 2, y, x - w / 2, y + topCurveHeight);
+  ctx.bezierCurveTo(x - w / 2, y + (h + topCurveHeight) / 2, x, y + (h + topCurveHeight) / 2, x, y + h);
+  ctx.bezierCurveTo(x, y + (h + topCurveHeight) / 2, x + w / 2, y + (h + topCurveHeight) / 2, x + w / 2, y + topCurveHeight);
+  ctx.bezierCurveTo(x + w / 2, y, x, y, x, y + topCurveHeight);
   ctx.closePath();
   ctx.fillStyle = color;
   ctx.fill();
   ctx.restore();
 }
 
+/*Kalp Nesnesi */
 class Heart {
-  constructor(scale = 0, colour = 'red') {
-    this.s = scale;
-    this.c = colour;
-    this.x = width/2;
-    this.h = height * scale; 
-    this.y = height/2 - (this.h !== 0 ? this.h / 2 : 0);
-    this.i = scaleStep;
+  constructor(scale = 0, color = '#f4c87a') {
+    this.scale = scale;
+    this.color = color;
+    this.x = width / 2;
+    this.h = height * scale;
+    this.y = height / 2 - (this.h !== 0 ? this.h / 2 : 0);
+    this.increment = scaleStep;
   }
-  
+
   step() {
-    this.s += this.i;  
-    this.i += 0.00005; 
-    this.h = height * this.s; 
-    this.y = height / 2 - (this.h !== 0 ? this.h / 2 : 0); 
+    this.scale += this.increment;
+    this.increment += 0.00005;
+    this.h = height * this.scale;
+    this.y = height / 2 - (this.h !== 0 ? this.h / 2 : 0);
   }
-  
-  draw(context) {
-    if (this.s === 0)
-      return;
-    drawHeart(context, this.x, this.y, this.h, this.h, this.c);
+
+  draw(ctx) {
+    if (this.scale === 0) return;
+    drawHeart(ctx, this.x, this.y, this.h, this.h, this.color);
   }
 }
 
+/*Renk Döngüsü */
 class ColourWheel {
   constructor(colors) {
-    this.i = 0;
-    this.c = colors;
+    this.colors = colors;
+    this.index = 0;
   }
-  
+
   next() {
-    let c = this.c[this.i++];
-    this.i %= this.c.length;
-    return c;
+    const color = this.colors[this.index];
+    this.index = (this.index + 1) % this.colors.length;
+    return color;
   }
 }
 
-window.addEventListener('load', function() {
-  var canvas  = document.getElementById("animation"),
-      context = canvas.getContext("2d"),
-      colours = new ColourWheel(colourList),
-      hearts  = [];
-  
-  context.fillStyle = 'rgba(38, 38, 38, 1)';
+/*Animasyonu Başlat */
+window.addEventListener('load', () => {
+  const canvas = document.getElementById("animation");
+  const context = canvas.getContext("2d");
+  const colours = new ColourWheel(colourList);
+  let hearts = [];
+
+  // İlk arka plan
+  context.fillStyle = 'rgba(0, 0, 0, 0.03)';
   context.fillRect(0, 0, width, height);
-  
+
   let lastTime = 0;
-  +(function animation(time) {
+
+  (function animation(time) {
     requestAnimationFrame(animation);
-    
-    for (let h of hearts) h.step();
-    
-    hearts = hearts.filter(h => h.s <= maxScale * 1.5);
-    
+
+    hearts.forEach(h => h.step());
+    hearts = hearts.filter(h => h.scale <= maxScale * 1.5);
+
     if (time - lastTime >= newHeartInterval) {
       lastTime = time;
       hearts.push(new Heart(0, colours.next()));
     }
-    
-    hearts.sort((a, b) => b.s - a.s);
-    
-    for (let h of hearts) h.draw(context);
-  }());
+
+    hearts.sort((a, b) => b.scale - a.scale);
+    hearts.forEach(h => h.draw(context));
+  })(0);
 });
